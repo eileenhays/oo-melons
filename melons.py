@@ -2,6 +2,9 @@
 
 from random import randint
 
+from datetime import datetime
+
+
 class AbstractMelonOrder(object):
     """Parent class for a melon order."""
 
@@ -9,15 +12,27 @@ class AbstractMelonOrder(object):
         """Initialize melon order attributes."""
 
         self.species = species
-        self.qty = qty
+        if qty < 100:
+            self.qty = qty
+        else:
+            raise TooManyMelonsError(" No more than 100 many melons!")
         self.shipped = False
 
     def get_base_price(self):
 
         base_price = randint(5, 9)
+        print base_price
+
+        now_datetime = datetime.now()
+
+        if (8 <= now_datetime.hour <= 13
+            and 0 <= now_datetime.weekday() <= 4):
+            base_price += 4
 
         if self.species == "Christmas":
             base_price *= 1.5
+
+        print base_price
 
         return base_price
 
@@ -82,3 +97,10 @@ class GovernmentMelonOrder(AbstractMelonOrder):
         """ Record inspection status, true or false"""
 
         self.passed_inspection = passed
+
+class TooManyMelonsError(ValueError):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
